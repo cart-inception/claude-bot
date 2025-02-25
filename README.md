@@ -1,8 +1,8 @@
-# Wave Rover ROS
+# Claude Bot ROS
 
 ## Overview
 
-Wave Rover ROS is a robotics software suite designed for autonomous navigation and control of a rover. This project integrates various modules that offer functionalities ranging from sensor data processing to real-time decision making.
+Claude Bot ROS is a robotics software suite designed for autonomous navigation and control of a rover. This project integrates various modules that offer functionalities ranging from sensor data processing to real-time decision making.
 
 ## Key Features and Implementation Details
 
@@ -37,10 +37,10 @@ Wave Rover ROS is a robotics software suite designed for autonomous navigation a
   - Detailed in `src/navigation.py`, this module calculates optimal paths based on mapping data and real-time sensor feedback.
   - Incorporates algorithms for dynamic path reconfiguration when encountering unexpected obstacles.
 
-### 6. Wave Rover Controller
+### 6. Claude Bot Controller
 - **Feature:** Serves as the central orchestrator, integrating all subsystems into a cohesive, autonomous unit.
 - **Implementation:**
-  - Located in `src/wave_rover_controller.py`, it manages the coordination between sensor input, data processing, and control outputs.
+  - Located in `src/claude_bot_controller.py`, it manages the coordination between sensor input, data processing, and control outputs.
   - Oversees system-level control loops and decision-making processes to ensure unified operation.
 
 ### 7. Utility Functions
@@ -53,20 +53,20 @@ Wave Rover ROS is a robotics software suite designed for autonomous navigation a
 - **Configuration:** System parameters (e.g., sensor thresholds, control strategies) are defined in `config.json`.
 - **Build and Dependency Management:**
   - Managed with CMake as described in `CMakeLists.txt` and the ROS package manifest in `package.xml`.
-- **Launch:** The `launch/wave_rover.launch` file orchestrates the initialization of all components, ensuring proper startup sequence.
+- **Launch:** The `launch/claude_bot.launch` file orchestrates the initialization of all components, ensuring proper startup sequence.
 
 ## Conclusion
 
-Wave Rover ROS is built around modular design principles to ensure high maintainability and scalability, making it suitable for advanced autonomous rover applications.
+Claude Bot ROS is built around modular design principles to ensure high maintainability and scalability, making it suitable for advanced autonomous rover applications.
 
 ## Project Structure
 
 ```
-wave_rover_ros
+claude_bot_ros
 ├── launch
-│   └── wave_rover.launch        # Launch configuration for ROS nodes
+│   └── claude_bot.launch        # Launch configuration for ROS nodes
 ├── src
-│   ├── wave_rover_controller.py  # Main controller for the WAVE ROVER
+│   ├── claude_bot_controller.py  # Main controller for the CLAUDE BOT
 │   ├── lidar_integration.py      # LiDAR integration for point cloud processing
 │   ├── mapping.py                # Mapping functionality for creating and updating maps
 │   ├── navigation.py             # Navigation and path planning for the robot
@@ -87,17 +87,17 @@ wave_rover_ros
    - Connect the Raspberry Pi to a display, keyboard and mouse for initial setup
    - Ensure the Pi has internet access for package downloads
 
-2. **Connect the Wave Rover Hardware**:
-   - Mount the Raspberry Pi 5 on the Wave Rover chassis using the designated mounting plate
+2. **Connect the Claude Bot Hardware**:
+   - Mount the Raspberry Pi 5 on the Claude Bot chassis using the designated mounting plate
    - Connect the LiDAR scanner to `/dev/ttyUSB0` (typically)
-   - Connect the Wave Rover controller board to `/dev/ttyUSB1` (typically)
+   - Connect the Claude Bot controller board to `/dev/ttyUSB1` (typically)
    - Ensure the GPIO pins are properly connected for motor control if using direct GPIO control:
      - Connect left motor control to designated GPIO pins
      - Connect right motor control to designated GPIO pins
 
 3. **Power Setup**:
-   - Ensure the 3x 18650 batteries are properly installed in the Wave Rover
-   - Connect the Raspberry Pi to a stable 5V power supply (using the Wave Rover's onboard power)
+   - Ensure the 3x 18650 batteries are properly installed in the Claude Bot
+   - Connect the Raspberry Pi to a stable 5V power supply (using the Claude Bot's onboard power)
    - Verify that the robot's battery voltage is displaying correctly on the OLED screen
 
 ### 2. Software Installation
@@ -140,7 +140,7 @@ wave_rover_ros
    sudo apt install -y python3-rpi.gpio  # GPIO library for Raspberry Pi
    ```
 
-### 3. Wave Rover ROS Package Setup
+### 3. Claude Bot ROS Package Setup
 
 1. **Create ROS Workspace**:
    ```bash
@@ -148,9 +148,9 @@ wave_rover_ros
    cd ~/catkin_ws/src
    ```
 
-2. **Clone the Wave Rover Repository**:
+2. **Clone the Claude Bot Repository**:
    ```bash
-   git clone https://github.com/your-username/wave_rover_ros.git
+   git clone https://github.com/your-username/claude_bot_ros.git
    ```
    
 3. **Build the Package**:
@@ -167,7 +167,7 @@ wave_rover_ros
    ```
    - If necessary, update the `config.json` file with the correct port paths:
    ```bash
-   cd ~/catkin_ws/src/wave_rover_ros
+   cd ~/catkin_ws/src/claude_bot_ros
    nano config.json
    ```
    - Default configuration:
@@ -208,9 +208,9 @@ wave_rover_ros
 2. **Test Individual Nodes**:
    ```bash
    # In separate terminals:
-   rosrun wave_rover_ros lidar_integration.py
-   rosrun wave_rover_ros mapping.py
-   rosrun wave_rover_ros navigation.py
+   rosrun claude_bot_ros lidar_integration.py
+   rosrun claude_bot_ros mapping.py
+   rosrun claude_bot_ros navigation.py
    ```
 
 3. **Test GPIO Control** (if using GPIO):
@@ -223,24 +223,24 @@ wave_rover_ros
 
 1. **Launch the Complete System**:
    ```bash
-   roslaunch wave_rover_ros wave_rover.launch
+   roslaunch claude_bot_ros claude_bot.launch
    ```
 
 2. **Auto-start on Boot** (Optional):
    - Create a startup service:
    ```bash
-   sudo nano /etc/systemd/system/wave-rover.service
+   sudo nano /etc/systemd/system/claude-bot.service
    ```
    - Add the following content:
    ```
    [Unit]
-   Description=Wave Rover ROS
+   Description=Claude Bot ROS
    After=network.target
 
    [Service]
    User=pi
    WorkingDirectory=/home/pi/catkin_ws
-   ExecStart=/bin/bash -c "source /opt/ros/noetic/setup.bash && source /home/pi/catkin_ws/devel/setup.bash && roslaunch wave_rover_ros wave_rover.launch"
+   ExecStart=/bin/bash -c "source /opt/ros/noetic/setup.bash && source /home/pi/catkin_ws/devel/setup.bash && roslaunch claude_bot_ros claude_bot.launch"
    Restart=on-failure
    RestartSec=5
 
@@ -249,7 +249,7 @@ wave_rover_ros
    ```
    - Enable the service:
    ```bash
-   sudo systemctl enable wave-rover.service
+   sudo systemctl enable claude-bot.service
    ```
 
 ### 6. Troubleshooting
@@ -292,13 +292,13 @@ wave_rover_ros
 
 ## Usage Guidelines
 
-- **Launching the Nodes**: Use the provided launch file to start all necessary nodes for the WAVE ROVER.
+- **Launching the Nodes**: Use the provided launch file to start all necessary nodes for the CLAUDE BOT.
 
    ```bash
-   roslaunch wave_rover_ros wave_rover.launch
+   roslaunch claude_bot_ros claude_bot.launch
    ```
 
-- **Controlling the Robot**: Interact with the robot through the `wave_rover_controller.py` script, which handles user commands and manages the robot's operations.
+- **Controlling the Robot**: Interact with the robot through the `claude_bot_controller.py` script, which handles user commands and manages the robot's operations.
 
 - **LiDAR Integration**: The `lidar_integration.py` script processes point cloud data from the LiDAR scanner and publishes it to a ROS topic for further processing.
 
@@ -306,14 +306,14 @@ wave_rover_ros
 
 ## Main Functionalities
 
-- **Wave Rover Controller**: Manages the overall operations of the robot, including initialization and command handling.
+- **Claude Bot Controller**: Manages the overall operations of the robot, including initialization and command handling.
 - **LiDAR Integration**: Processes and publishes LiDAR data for mapping and navigation.
 - **Mapping**: Creates and updates maps based on LiDAR data, with functionality to save and load maps.
 - **Navigation**: Implements path planning and obstacle avoidance to navigate the robot effectively.
 
 ## Contributing
 
-Contributions to enhance the functionality and performance of the WAVE ROVER ROS integration are welcome. Please submit a pull request or open an issue for discussion.
+Contributions to enhance the functionality and performance of the CLAUDE BOT ROS integration are welcome. Please submit a pull request or open an issue for discussion.
 
 ## License
 
