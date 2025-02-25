@@ -36,16 +36,20 @@ class WaveRoverController:
     def initialize_robot(self):
         log_message("Initializing robot hardware and software components")
         lidar_port = self.config.get('lidar_port', '/dev/ttyUSB0')
-        rover_port = self.config.get('rover_control_port', '/dev/ttyUSB1')
         self.lidar.initialize_lidar(lidar_port)
-        log_message(f"Configured Rover Control Port: {rover_port}")
         
-        # Initialize GPIO rover control if pins are configured
+        # Initialize GPIO rover control - prioritizing GPIO control for Raspberry Pi
         left_pin = self.config.get('gpio_left_motor_pin')
         right_pin = self.config.get('gpio_right_motor_pin')
+        
         if left_pin is not None and right_pin is not None:
             self.gpio_controller = GpioController(left_pin, right_pin)
             log_message(f"Initialized GPIO rover control on pins: {left_pin}, {right_pin}")
+        else:
+            # Fallback to serial control only if GPIO pins are not configured
+            rover_port = self.config.get('rover_control_port', '/dev/ttyUSB1')
+            log_message(f"GPIO pins not configured. Using rover control port: {rover_port}")
+            # Additional code would be needed here to initialize serial communication
         
     def start_control_loop(self):
         self.running = True

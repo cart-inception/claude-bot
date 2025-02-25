@@ -83,7 +83,7 @@ claude_bot_ros
 
 ### 1. Hardware Setup
 1. **Prepare the Raspberry Pi 5**:
-   - Install Raspberry Pi OS (64-bit recommended) on a microSD card (32GB or larger recommended)
+   - Install Ubuntu Server 20.04 (64-bit) on a microSD card (32GB or larger recommended)
    - Connect the Raspberry Pi to a display, keyboard and mouse for initial setup
    - Ensure the Pi has internet access for package downloads
 

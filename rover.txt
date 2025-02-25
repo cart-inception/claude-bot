@@ -1,0 +1,682 @@
+WAVE ROVER - Waveshare Wiki
+
+1 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+WAVE ROVER
+From Waveshare Wiki
+Jump to: navigation, search
+WAVE ROVER
+
+Introduction
+WAVE ROVER is a full metal body 4WD mobile robot chassis with
+superb off-road crossing capabilities, shock-absorbing performance,
+open source all code for secondary development. It supports multiple
+host computers (Raspberry Pi, Jetson Nano, Jetson Orin Nano, etc.)
+that communicate with the ESP32 slave computer through serial port.
+
+(https://www.waveshare.com/
+Equipped with an integrated 3S 18650 lithium battery UPS power
+module (3x 18650 lithium batteries in series (not included)), it provides
+a continuous power source for the robot while supporting charging
+and discharging simultaneously. The built-in multi-functional robot
+
+wave-rover.htm)
+TTL Bus Servo Control Interface, I2C,
+UART
+
+driver board can expand to support serial bus servos, PWM output, SD card, and other functions. The
+driver board is based on ESP32 and features onboard WiFi and Bluetooth.
+
+It utilizes N20 reduction motors with high-quality gearboxes, which allows the mobile robot to drive
+at high speed with great power. The robot is equipped with soft rubber wheels, greatly reducing the
+impact from complex terrains, allowing it to easily meet requirements for high-speed travel, shock
+absorption, and off-road capabilities. It also comes with an expansion platform that can install host
+devices (Raspberry Pi 4B, Jetson Nano, etc.), LD19/STL-27L LiDAR, and a pan-tilt camera, providing
+more possibilities for secondary development.
+
+Features
+Equipped with N20 reduction motors that use high-quality gearboxes, enabling it to travel at a high
+speed of 1.25m/s.
+The flexible rubber tires significantly reduce the impact of complex terrains on the product.
+It features a 0.91-inch OLED screen for interactive purposes.
+The product is designed with a charging interface and automatic download circuit, allowing it to be
+used while charging.
+The UPS power module on board contains an INA219 acquisition chip, facilitating real-time
+monitoring of battery voltage and charging current.
+The UPS power module utilizes three 18650 batteries (not included) in series with a large capacity of
+7800mAh, providing a higher output current and stronger motor power.
+The UPS power module also offers 5V and 3.3V outputs for expanding other devices.
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+2 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+The UPS power module includes a lithium battery protection circuit, offering functions such as
+overcharging, over-discharging, overcurrent, and short-circuit protection.
+The sample code is developed using Arduino IDE, eliminating the need for manual configuration of
+the compilation environment. Upon startup, the ESP32 automatically establishes a WIFI hotspot.
+Users can connect and log in to the control interface using a smartphone (Android/iOS) or a
+computer (Linux/Windows/Mac) with any Chromium-based browser, without requiring an app
+download.
+The slave ESP32 can be used to drive DC motors and serial bus servos, onboard interface for OLED
+screens, TF card slots, a nine-axis IMU module, WiFi, and Bluetooth. Even without installing an
+upper-level device, it can be used independently.
+The system can be extended with various host devices, using serial communication to transmit
+control data in JSON format.
+The entire code is open-source and comes with online rich development documentation and
+tutorials.
+The open-source resource includes planar drawings and chassis structural drawings, including 3D
+models, facilitating secondary development.
+JSON commands can be sent via serial port, USB, HTTP, ESP-NOW, etc.
+Most of the configuration settings can be realized by JSON commands, for example, you can
+configure WIFI connection for the product without connecting the USB cable.
+
+Firmware Updates
+If your WAVE ROVER displays "Version: 0.9" on the OLED screen when booting up, it indicates that
+the driver software on WAVE ROVER is already updated to the new version, and there is no need to
+execute this section for product updating.
+If your WAVE ROVER boots up without displaying "Version: 0.9" on the OLED screen, it means that
+the driver software on the product is still the old version, and you need to execute this section to
+update the product. If you need to restore factory settings, you can also do so through this section.
+We provide an ESP32 download tool for WAVE ROVER, which can help users quickly update product
+firmware or reproduce the default factory demo of product.
+1. Click here (https://files.waveshare.com/upload/5/50/WAVE_ROVER_FACTORY.zip) to download, unzip it
+and double click "flash_download_tool_3.9.5.exe" demo. Then, two windows pop up. The UI interface of
+the download tool is for operation, and the other window is the terminal to display the working status of
+the download tool.
+2. In the "DOWNLOAD TOOL MODE" interface, select "Chip Type" as ESP32, and "WorkMode" as Factory.
+With "Factory", the relative path will be used when calling the binary file, so you don't need to manually
+enter the binary file path, select it, and click OK.
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+3 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+(/wiki/File:WAVEROVER_Demo01.png)
+
+3. In this software interface, keep "LockSettings" checked, you can upload demos to 8x WAVE ROVERs at
+the same time on the right. Next, use the USB cable to connect the driver board on the WAVE ROVER with
+the computer, click "COM", and select the new COM (the new COM here is COM3); BAUD is used to set
+the download speed, the higher the value, the speed the faster, ESP32 can use up to 921600.
+
+(/wiki/
+
+File:WAVEROVER_Demo02.png)
+4. After the selection, click START to start uploading the demo, after the upload is completed, "IDLE" will
+change to "FINISH". Then, the driver board can be disconnected from the USB connection with the
+computer, turn on the WAVE ROVER's power switch, and you can control it.
+
+(/wiki/
+
+File:WAVEROVER_Dem3.png)
+
+WAVE ROVER User Manual
+Note: Customers need to purchase and install three 18650 lithium batteries on their own before using
+the product. A battery with a high discharge rate is recommended. When connecting the batteries for
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+4 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+the first time, please pay attention to whether the LED light is on. If the LED light is on, it indicates
+that the positive and negative poles of the batteries are reversed. Please check and ensure that the
+batteries are not reversed. Charging is prohibited if the batteries are connected in reverse, as it may
+cause a risk of explosion.
+
+WAVE ROVER Basic Use
+1. After turning on the power switch on the WAVE ROVER, you can control it. When its internal power
+is depleted, you need to use the provided 12.6V 2A power supply inserted into the power port of
+the product to charge it. It supports charging while in use.
+2. Upon booting up, the OLED screen on the robot displays the following information:
+The first line indicates that the WiFi is in AP mode, and the WiFi hotspot is named "UGV".
+The second line indicates that the STA mode is turned off. When the WiFi is in STA mode, the
+router will assign an IP address, which will be displayed.
+The third line displays the MAC address of this device, which is unique and used for ESP-NOW
+communication.
+The fourth line indicates the voltage of the product's power supply.
+3. After powering on, use your smartphone or computer to connect to the robot's WiFi network named
+"UGV" with the password "12345678". Once connected to the WiFi, open the Google Chrome
+browser and type "192.168.4.1" in the address bar to access the web-based user interface. From
+there, you can use the functionalities of the web interface to control the robot. You can also send
+JSON commands to the robot from this page.
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+5 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+(/wiki/File:WAVEGO-
+
+USE_02.png)
+The web interface will display the robot's voltage, WIFI signal strength (STA mode), heading angle, IP
+and MAC address, and other information in real-time.
+The movement of the robot can be controlled by the direction button, and the SLOW, MIDDLE, and
+FAST buttons below the direction buttons are used to select the moving speed of the robot.
+In the FEEDBACK INFOMATION window you can send JSON commands to the robot, here are the
+specific JSON commands.
+The web page includes "heartbeat detection". After opening the web control interface, the web
+application will communicate with the robot continuously. If the connection is disconnected during
+the movement of the robot, the robot will automatically stop moving in a short time to avoid
+danger.
+As the web application is completely open-source, you can change its interface and functions by
+changing WebPage.h. You can follow the customizable development tutorial we provide to learn.
+
+Connect to Known WiFi
+Find the CMD_WIFI_APSTA command on the JSON command list below the Web application. You
+can click on the "INPUT" button below this command, and then this command will be automatically
+written in the JSON command input window.
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+6 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+(/wiki/
+
+File:WAVEGO-USE_03.png)
+The specific content in the JSON command input window:
+{"T":404,"ap_ssid":"UGV","ap_password":"12345678","sta_ssid":"your_ssid","sta_password":"password"}
+Replace your_ssid as your known WIFI, and so as the password, and please do not delete the
+double quotation marks.
+Click on "SEND" after modification, and wait for the product to connect. If it successfully
+connects to your known WIFI, the OLED screen will display the IP address assigned to robot by
+the router on the "ST" line.
+Once connected successfully, the robot will automatically save this WiFi configuration. In the
+future, unless you need to change the known WiFi network, you do not need to repeat the
+above steps for configuration. The robot will automatically connect to the known WiFi network
+after booting up.
+You can access the robot's Web control page by opening the Google Chrome browser on other
+devices within the same local network and entering the IP address of the robot's "ST" mode. You can
+also control the robot through JSON commands using a simple Python script by sending HTTP
+requests.
+
+WAVE ROVER's JSON Instruction Interaction Tutorial
+What Is JSON?
+JSON (JavaScript Object Notation) is an open standard file format and data interchange format that is
+easy for humans to read and write and can exchange data between multiple languages. It is also easy
+for machines to parse and generate.
+
+Why Interact With WAVE ROVER Using JSON Commands?
+As WAVE ROVER boasts more onboard resources, rich demo functions, and easy to connect to
+external host computers, it is easily controlled by the host computer in more aspects. Hence, we can
+use JSON commands to interact with WAVE ROVER. Also, we can customize these functions based on
+the current framework to make them more suitable for your needs.
+
+JSON Commands Communication Methods
+You can use the following demos to control the robot's functions by sending JSON commands in
+different ways.
+The robot has a built-in heartbeat function: if no new movement control command is issued within 3
+seconds, the robot will automatically stop moving. Therefore, when controlling the robot through
+the host, you need to repeatedly issue movement commands at regular intervals to keep the robot
+moving continuously.
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+7 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+Issue JSON Commands via the Web Application
+After powering on, use your smartphone or computer to connect to the robot's WiFi network named
+"UGV" with the password "12345678". Once connected to the WiFi, open the Google Chrome
+browser and type "192.168.4.1" in the address bar to access the web-based user interface.
+Send JSON command to the robot on the FEEDBACK INFORMATION window. For more details, you
+can refer to #JSON Command Set.
+
+Issue JSON Commands Over HTTP Using Python Scripts
+Click to download http_simple_ctrl.py (https://files.waveshare.com/upload/5/51/Http_simple_ctrl.zip)
+, as shown below:
+import requests
+import argparse
+
+def main():
+parser = argparse.ArgumentParser(description='Http JSON Communication')
+parser.add_argument('ip', type=str, help='IP address: 192.168.10.104')
+args = parser.parse_args()
+ip_addr = args.ip
+try:
+while True:
+command = input("input your json cmd: ")
+url = "http://" + ip_addr + "/js?json=" + command
+response = requests.get(url)
+content = response.text
+print(content)
+except KeyboardInterrupt:
+pass
+
+if __name__ == "__main__":
+main()
+
+Before running the demo, you need to confirm the IP address of the robot. The IP address of the
+robot is closely related to its WiFi mode.
+If the robot's WIFI mode is only in AP mode, the IP address is 192.168.4.1.
+If the robot's WIFI mode is in STA mode, you can get the IP address of the WAVGO on the OLED
+screen.
+Run the HTTP request communication demo by the following command, and change the IP address
+of the command to your robot's IP address.
+python http_simple_ctrl.py 192.168.4.1
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+8 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+Note: In either mode, the robot needs to be on the same LAN as the device on which this script is
+running.
+
+Issue JSON Commands Using ESP-NOW
+You can control the robot driver board to send commands to another driver board through ESPNOW, which features connection-free low latency and supports unicast, multicast and broadcast
+communication.
+To test it easily, the default ESP-NOW mode after booting up can receive the ESPP-NOW commands.
+If you do not want this product to be controlled by other devices, you can use {"T":301,"mode":0}
+command to turn off the ESP-NOW receiving function, and you can restore it by {"T":301,"mode":3}
+later.
+If you need the product to automatically set to {"T":301,"mode":0} every time you turn it on, you can
+write this command to boot.mission file. So that the product will automatically turn off the ESPNOW command receiving function every time the product is turned on, you can use this command
+to add {"T":301,"mode":0} to boot.mission:{"T":222,"name":"boot", "step":"{\"T\":301,\"mode\":0}"},
+and follow it up if you want to cancel this setting you can just delete the boot.mission file (after
+deleting it, it will be automatically created on the next boot): {"T":203,"name":"boot.mission"}.
+ESP-NOW Usage Preparation
+In the following tutorials for using ESP-NOW, the receiving of JSON commands on the receiving end
+assumes that you have enabled the command-receiving function of ESP-NOW (the default state of a
+new product is sufficient).
+The hardware involved in the following functions are ESP32 devices such as General Driver for
+Robots or ROS Driver for Robots, which are running our slave demos.
+Unicast Control
+Unicast control is point-to-point control, and you can control one device through another device.
+Users need to get the MAC address of the controlled terminal, and this address usually displays on
+the OLED screen.
+Users can send the JSON commands to the control terminal, and add the MAC address of the
+controlled terminal to the peer. For example, {"T":303,"mac":"CC:DB:A7:5C:1C:40"}, and you need to
+replace the value of mac with the mac address of your slave.
+If you need to delete some mac address from the peer, you can use
+{"T":304,"mac":"CC:DB:A7:5C:1C:40"} command.
+Send JSON command to the controlled terminal:
+{"T":306,"mac":"CC:DB:A7:5C:1C:40","dev":0,"b":0,"s":0,"e":0,"h":0,"cmd":1,"megs":"{"T":114,"led":255}"}
+You can replace the JSON command of megs above with other commands, and replace the mac
+value with the mac address of your controlled terminal. Do not change other values as these values
+are for other functions.
+Broadcast Control
+Broadcast control is a one-to-many control method where you can control multiple devices at the
+same time from one device.
+The user does not need to obtain the MAC address of the controlled terminal, this mode will send
+commands to all devices within a certain range, the method of broadcast control is the same as that
+of unicast control, only the mac value in unicast control needs to be replaced with the broadcast
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+9 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+address: "FF:FF:FF:FF:FF:FF"
+The user adds the broadcast address to the peer by sending a JSON command to the console using
+the method described in this tutorial: {"T":303, "mac": "FF:FF:FF:FF:FF:FF"}
+If you need to delete the broadcast address from the peer, you can use
+{"T":304,"mac":"FF:FF:FF:FF:FF:FF"} command.
+The broadcast sends JSON command:
+{"T":306,"mac":"FF:FF:FF:FF:FF:FF","dev":0,"b":0,"s":0,"e":0,"h":0,"cmd":1,"megs":"{"T":114,"led":255}"}
+You can replace the JSON commands in the megs above above with other commands and
+leave the rest of the values unchanged, those values are used for other functions.
+Multicast Control
+Multicast control is a one-to-many control method where you can control multiple devices at the
+same time from a single device. The difference with broadcast control is that multicast control allows
+you to select the device being controlled.
+Users need to get the MAC address on the controlled terminal, and this address usually displays on
+the OLED screen.
+Users can send the JSON commands to the control terminal, and add the MAC address of the
+controlled terminal to peer, for example, {"T":303,"mac":"CC:DB:A7:5C:1C:40"},
+{"T":304,"mac":"CC:DB:A7:5C:E5:FC"}. You need to replace the value of mac with the mac address of
+your slave. Also, you can add multiple mac addresses of the controlled terminal, but it is
+recommended that you do not add more than 20.
+Do not add the broadcast address "FF:FF:FF:FF:FF:FF".
+If you need to delete the broadcast mac address from the peer, you can use
+{"T":304,"mac":"FF:FF:FF:FF:FF:FF"} command.
+The multicast sends the JSON command:
+{"T":305,"dev":0,"b":0,"s":0,"e":1.57,"h":1.57,"cmd":1,"megs":"{"T":114,"led":255}"}
+You can replace the JSON command in the megs above with other commands, and leave the rest of
+the values unchanged, those values are used for other functions.
+
+Issue JSON Commands Using GPIO or USB Serial Port
+You can use a PC, Raspberry Pi, Jeston Nano, Jetson Orin Nano, and other hosts to communicate with
+the ESP32 slave through the serial port. There are two methods for serial port connection as follows:
+Connects the robot to the Raspberry Pi, Jeston Nano or Jetson Orin Nano via a 40PIN UART
+interface.
+Connect the USB port of the robot's slave drive board to the host via a USB cable (this method
+requires disassembly of the robot).
+Click on serial_simple_ctrl.py (https://files.waveshare.com/upload/5/51/Serial_simple_ctrl.zip), as
+shown below:
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+10 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+import serial
+import argparse
+import threading
+def read_serial():
+while True:
+data = ser.readline().decode('utf-8')
+if data:
+print(f"Received: {data}", end='')
+def main():
+global ser
+parser = argparse.ArgumentParser(description='Serial JSON Communication')
+parser.add_argument('port', type=str, help='Serial port name (e.g., COM1 or /dev/ttyUSB0)')
+args = parser.parse_args()
+ser = serial.Serial(args.port, baudrate=115200, dsrdtr=None)
+ser.setRTS(False)
+ser.setDTR(False)
+serial_recv_thread = threading.Thread(target=read_serial)
+serial_recv_thread.daemon = True
+serial_recv_thread.start()
+try:
+while True:
+command = input("")
+ser.write(command.encode() + b'\n')
+except KeyboardInterrupt:
+pass
+finally:
+ser.close()
+
+if __name__ == "__main__":
+main()
+
+Use the following commands to run the serial port communication demo. The connected COM port
+of the product should be added. Change COM20 as the new serial device port number on the PC
+after connecting to the product, and if you use other devices such as Raspberry Pi and Jetson Orin
+Nano, you need to change it as the corresponding port number.
+python http_simple_ctrl.py 192.168.4.1
+
+After running, you can send JSON commands on this interface, or you can get the robot's feedback
+information to communicate with the robot.
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+11 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+JSON Command Set
+Chassis Movement
+Left and right wheel speed control - CMD_SPEED_CTRL
+{"T":1,"L":0.5,"R":0.5}
+
+L is the speed of the left wheel, R is the speed of the right wheel, and the speed range is -0.5 ~ +0.5,
+positive value forward, negative value backward.
+This product is WAVE ROVER, the motor used is without encoders, the speed of 0.5 represents
+100% of the PWM of the motor on that side, and 0.25 represents 50% of the PWM of the motor
+on that side.
+It is recommended to use this command to control the product.
+
+Left and right motor PWM control - CMD_PWM_INPUT
+{"T":11,"L":164,"R":164}
+
+L is the left motor PWM value, R is the right motor PWM value, and the PWM value range is -255 ~
++255, positive value is forward, negative value is backward.
+Since DC gear motors have poor low-speed characteristics, the motor may not rotate when the
+absolute value of the PWM is too small.
+This command is only for debugging, for controlling the product movement, you can use the above
+CMD_SPEED_CTRL.
+
+ROS Control - CMD_ROS_CTRL
+{"T":13,"X":0.1,"Z":0.3}
+
+The X value is the moving linear velocity in m/s and the Z value is the steering angular velocity in
+rad/s.
+Note: this command is only for UGV01 with encoder.
+
+Setting Motor PID
+{"T":2,"P":200,"I":2500,"D":0,"L":255}
+
+The three values of P, I and D correspond to proportional, integral and differential coefficients
+respectively, and the value of L is the interface reserved for Windup Limits, which is not available for
+the default PID controller used in UGV01 at present, and we have reserved this interface to facilitate
+the replacement of other PID controllers by users.
+Note: this command is only for UGV01 with encoder.
+
+OLED Screen Setting
+OLED Screen Control
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+12 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+{"T":3,"lineNum":0,"Text":"putYourTextHere"}
+
+OLED screen display content settings, lineNum parameter for the line settings, can be: 0, 1, 2, 3, a
+total of 4 lines of content can be displayed. Each time you set a line of content, the new content will
+not affect the other lines of content displayed, but will replace the original content before this line.
+The Text parameter is for the content setting where you can enter text that will be displayed on the
+corresponding line.
+After using this command, the OLED screen will not display the robot information, and display the
+content that the command required.
+
+Restore OLED Screen
+{"T":-3}
+
+When the command type is -3, and restore the OLED screen to the initial status, and display the
+robot information.
+
+Retrieve Product Information
+Retrieve IMU Data
+{"T":126}
+
+Used to obtain IMU information, including heading angle, geomagnetic field, acceleration, attitudes,
+temperature, etc.
+
+Chassis Information Feedback - CMD_BASE_FEEDBACK
+{"T":130}
+
+Serial Port Continuous Feedback
+//Turn off (Default)
+{"T":131,"cmd":0}
+//Turn on
+{"T":131,"cmd":1}
+
+When this function is not enabled, the chassis information feedback is realized through a questionand-answer method, and the above CMD_BASE_FEEDBACK and so on are used to get the chassis
+information feedback.
+When this function is enabled, the chassis can continuously feedback information, and not need to
+query through the host, suitable for the ROS system.
+
+Serial Port Echo Switch
+//Turn off (default)
+{"T":143,"cmd":0}
+//Turn on
+{"T":143,"cmd":1}
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+13 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+When turned on, all the commands you send to the slave will appear in the serial port feedback.
+
+IO4 IO5 Control
+{"T":132,"IO4":255,"IO5":255}
+
+For setting the PWM of IO4 and IO5.
+
+External Module Expansion
+External Module Models
+{"T":4,"cmd":0}
+
+0: Null - 1: RoArm-M2 - 3: Gimbal
+
+Pan-tilt Control
+{"T":133,"X":45,"Y":45,"SPD":0,"ACC":0}
+
+If the product is installed with a pan-tilt, it can be controlled by this command. The X value is the
+horizontal angle, the positive value is to the left, and the negative value is to the right. The Y value is
+the vertical angle, the positive value is up, and the negative value is down.
+
+Robotic Arm JSON Command Control
+For robotic arm control, you can refer to RoArm-M2-S JSON Command Meaning (/wiki/RoArm-M2S_JSON_Command_Meaning).
+
+Host Computer Usage Tutorial
+Raspberry Pi Host Computer
+This chapter is tested with Raspberry Pi 5 and Raspberry Pi 4B.
+Connect a USB camera to the USB interface of the Raspberry Pi, recommended IMX335 5MP USB
+Camera (B).
+Install the Raspberry Pi onto the chassis.
+Create an image, and download the host computer program to the Raspberry Pi.
+Download link for ugv_rpi
+cd ugv_rpi/
+Add executable permissions to the installation script: sudo chmod +x setup.sh
+Add executable permissions to the script for configuring automatic startup: sudo chmod +x
+autorun.sh
+For International users: sudo ./setup.sh
+After installation, configure automatic operation upon startup: ./autorun.sh (Note: do not use sudo
+to run this command).
+Configure WIFI related functions (automatically switch to hotspot when there is no network): cd
+ugv_rpi/AccessPopup/
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+14 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+Install AccessPopup, add executable permissions to the installation script: sudo chmod +x
+installconfig.sh
+Run the installation script: sudo ./installconfig.sh
+Enter 1 to install AccessPopup, then press any key to exit, enter 9, and press Enter, to exit the
+installation script.
+After restarting the device, the Raspberry Pi will automatically run the main program of the product
+host computer.
+
+Product Hardware Introduction
+Driver Board General Driver for Robots Module Usage Tutorial
+How To Install Arduino IDE (/wiki/How_To_Install_Arduino_IDE)
+Tutorial I: Motor With Encoder Control Demo (/wiki/Tutorial_I:_Motor_With_Encoder_Control_Demo)
+Tutorial II: Motor Without Encoder Control Demo (/wiki/
+Tutorial_II:_Motor_Without_Encoder_Control_Demo)
+Tutorial III: ST3215 Serial Bus Servo Control Demo (/wiki/
+Tutorial_III:_ST3215_Serial_Bus_Servo_Control_Demo)
+Tutorial IV: PWM Servo Control Demo (/wiki/Tutorial_IV:_PWM_Servo_Control_Demo)
+Tutorial V: IMU Data Reading Demo (/wiki/Tutorial_V:_IMU_Data_Reading_Demo)
+Tutorial VI: SD Card Reading Demo (/wiki/Tutorial_VI:_SD_Card_Reading_Demo)
+Tutorial VII: INA219 Voltage And Current Monitoring Demo (/wiki/
+Tutorial_VII:_INA219_Voltage_And_Current_Monitoring_Demo)
+Tutorial VIII: OLED Screen Control Demo (/wiki/Tutorial_VIII:_OLED_Screen_Control_Demo)
+
+Motor Specifications
+Model: GF12-N20 Motor 12V200rpm Gearbox
+Rated voltage: 12V
+Rated current: 0.055A
+Locked rotor current: 0.45A
+Rated torque: 0.09kg.cm
+Locked rotor torque: 0.7kg.cm
+Rated output power: 1.5W
+No-load speed: 66±10%RPM
+Motor size: 34*12mm
+Output shaft size: 4*10mm
+
+Resource
+Open-source Demo
+WAVE ROVER Open-source Demo (https://files.waveshare.com/upload/e/e6/WAVE_ROVER_demo.zi
+p)
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+15 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+Robot Dimensions & Mounting Plate Drawing
+Chassis DXF Drawing (https://files.waveshare.com/upload/5/51/WAVE_ROVER_DXF.rar)
+Chassis PDF Drawing (https://files.waveshare.com/upload/b/b4/WAVE_ROVER_PDF.rar)
+Mounting Plate DXF Drawing (https://files.waveshare.com/upload/e/ef/WAVE_ROVER-EP_DXF.rar)
+Mounting Plate PDF Drawing (https://files.waveshare.com/upload/a/ab/WAVE_ROVER-EP_PDF.rar)
+
+Download Tool
+ESP32 Download Tool (https://files.waveshare.com/upload/5/51/WAVE_ROVER_FACTORY.zip)
+
+Robot Model
+WAVE ROVER 3D Model (https://files.waveshare.com/upload/e/ec/WAVE_ROVER_MODEL_STL.rar)
+
+Package List
+
+(/wiki/File:WAVE_ROVER_Pack.png)
+
+FAQ
+
+2/4/2025, 10:41 AM
+
+WAVE ROVER - Waveshare Wiki
+
+16 of 16
+
+https://www.waveshare.com/wiki/WAVE_ROVER
+
+Question: What is the average running time of WAVE ROVER on a single full charge
+of 3 x 18650 batteries?
+Answer:
+I'm sorry that there is no certain value for it.
+It depends on the battery's capacity and the consumption of the devices.
+
+Support
+
+Technical Support
+If you need technical support or have any
+feedback/review, please click the Submit Now
+button to submit a ticket, Our support team will
+check and reply to you within 1 to 2 working
+
+Submit Now (https://service.wav
+eshare.com/)
+
+days. Please be patient as we make every effort
+to help you to resolve the issue.
+Working Time: 9 AM - 6 PM GMT+8 (Monday to
+Friday)
+
+Retrieved from "https://www.waveshare.com/w/index.php?title=WAVE_ROVER&oldid=89168 (https://www.waveshare.com/w/
+index.php?title=WAVE_ROVER&oldid=89168)"
+
+2/4/2025, 10:41 AM
+
+
