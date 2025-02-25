@@ -1,0 +1,5 @@
+# This file contains the configuration file for hardware ports.
+{
+    "lidar_port": "/dev/ttyUSB0",
+    "rover_control_port": "/dev/ttyUSB1"
+}
