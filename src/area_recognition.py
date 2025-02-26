@@ -18,7 +18,10 @@ class AreaRecognitionSystem(Node):
         
         # Initialize mapping and navigation systems
         self.mapping = Mapping(grid_size=0.2)  # 20cm grid cells
-        self.navigation = Navigation(mapping_instance=self.mapping)
+        self.navigation = Navigation()
+        
+        # Connect mapping and navigation
+        self.navigation.set_mapping_reference(self.mapping)
         
         # Map file location
         self.map_file = map_file_path if map_file_path else "saved_map.pkl"
@@ -27,32 +30,51 @@ class AreaRecognitionSystem(Node):
         if self.map_file and os.path.exists(self.map_file):
             self.get_logger().info(f"Loading existing map from {self.map_file}")
             self.mapping.load_map(self.map_file)
-            self.navigation.current_position = self.mapping.current_position
+            if hasattr(self.mapping, 'current_position') and self.mapping.current_position:
+                self.navigation.update_position(self.mapping.current_position)
         else:
             self.get_logger().info("No existing map found. Starting with empty map.")
 
     def save_current_map(self):
         """Save the current map to file"""
-        self.get_logger().info(f"Saving map to {self.map_file}")
-        self.mapping.save_map(self.map_file)
+        try:
+            self.get_logger().info(f"Saving map to {self.map_file}")
+            self.mapping.save_map(self.map_file)
+            return True
+        except Exception as e:
+            self.get_logger().error(f"Error saving map: {str(e)}")
+            return False
 
     def process_lidar_data(self, lidar_data):
         """Process incoming LiDAR data for mapping and navigation"""
-        # Update the map with new lidar data
-        self.mapping.update_map(lidar_data, self.navigation.current_position)
-        
-        # Check if the area is familiar
-        area_familiar = self.mapping.is_area_familiar()
-        familiarity_level = self.mapping.get_current_area_familiarity()
-        
-        self.get_logger().info(f"Area familiarity level: {familiarity_level:.2f}")
-        self.get_logger().info(f"Area is {'familiar' if area_familiar else 'not familiar'}")
-        
-        return area_familiar
+        try:
+            # Update the map with new lidar data
+            self.mapping.update_map(lidar_data, self.navigation.current_position)
+            
+            # Check if the area is familiar
+            area_familiar = self.mapping.is_area_familiar()
+            familiarity_level = self.mapping.get_current_area_familiarity()
+            
+            self.get_logger().info(f"Area familiarity level: {familiarity_level:.2f}")
+            self.get_logger().info(f"Area is {'familiar' if area_familiar else 'not familiar'}")
+            
+            return area_familiar
+        except Exception as e:
+            self.get_logger().error(f"Error processing LiDAR data: {str(e)}")
+            return False
 
     def navigate_to_goal(self, goal_position):
         """Navigate to a goal position with area awareness"""
+        if not goal_position or len(goal_position) != 2:
+            self.get_logger().error("Invalid goal position provided")
+            return False
+            
         self.get_logger().info(f"Starting navigation to goal: {goal_position}")
+        
+        # Ensure we have a current position
+        if not self.navigation.current_position:
+            self.navigation.current_position = (0.0, 0.0)
+            self.get_logger().warning("No current position set, using default (0,0)")
         
         # Set the goal in the navigation system
         self.navigation.set_target(goal_position)
@@ -63,6 +85,10 @@ class AreaRecognitionSystem(Node):
             goal_position
         )
         
+        if not path:
+            self.get_logger().error("Failed to plan a path to the goal")
+            return False
+            
         self.get_logger().info(f"Planned path with {len(path)} waypoints")
         
         # Simulate navigation along the path
@@ -80,47 +106,56 @@ class AreaRecognitionSystem(Node):
 
     def navigate_to_waypoint(self, waypoint):
         """Simulate navigation to a specific waypoint"""
-        # Generate simulated LiDAR data for the current area
-        lidar_data = self.simulate_lidar_sensing(waypoint)
-        
-        # Process the data to update mapping and check familiarity
-        area_familiar = self.process_lidar_data(lidar_data)
-        
-        # Simulate movement behavior based on familiarity
-        if area_familiar:
-            self.get_logger().info("Using fast navigation in familiar area")
-            # In a real system, you would set higher speed, simpler path
-            time.sleep(0.5)  # Simulate faster movement
-        else:
-            self.get_logger().info("Using careful exploration in new area")
-            # In a real system, you would use slower speed, more detailed sensing
-            time.sleep(1.0)  # Simulate slower, more careful movement
+        try:
+            # Generate simulated LiDAR data for the current area
+            lidar_data = self.simulate_lidar_sensing(waypoint)
             
-            # In unfamiliar areas, we do more detailed mapping
-            # This would typically involve additional sensor processing
+            # Process the data to update mapping and check familiarity
+            area_familiar = self.process_lidar_data(lidar_data)
             
-        # Avoid obstacles along the way
-        self.navigation.avoid_obstacles()
-        
-        # Mark this waypoint as visited
-        self.mapping.remember_location(waypoint)
+            # Simulate movement behavior based on familiarity
+            if area_familiar:
+                self.get_logger().info("Using fast navigation in familiar area")
+                # In a real system, you would set higher speed, simpler path
+                time.sleep(0.5)  # Simulate faster movement
+            else:
+                self.get_logger().info("Using careful exploration in new area")
+                # In a real system, you would use slower speed, more detailed sensing
+                time.sleep(1.0)  # Simulate slower, more careful movement
+                
+                # In unfamiliar areas, we do more detailed mapping
+                # This would typically involve additional sensor processing
+                
+            # Avoid obstacles along the way
+            self.navigation.avoid_obstacles()
+            
+            # Mark this waypoint as visited
+            self.mapping.remember_location(waypoint)
+            return True
+        except Exception as e:
+            self.get_logger().error(f"Error navigating to waypoint: {str(e)}")
+            return False
     
     def simulate_lidar_sensing(self, position):
         """Generate simulated LiDAR readings based on position"""
-        # In a real system, this would come from actual sensors
-        # For simulation, we'll create points in a circle around the position
-        lidar_points = []
-        radius = 2.0  # meters
-        num_points = 16
-        
-        for i in range(num_points):
-            angle = 2 * np.pi * i / num_points
-            distance = radius * (0.8 + 0.4 * np.random.random())  # Randomize a bit
-            x = position[0] + distance * np.cos(angle)
-            y = position[1] + distance * np.sin(angle)
-            lidar_points.append((x, y))
-        
-        return lidar_points
+        try:
+            # In a real system, this would come from actual sensors
+            # For simulation, we'll create points in a circle around the position
+            lidar_points = []
+            radius = 2.0  # meters
+            num_points = 16
+            
+            for i in range(num_points):
+                angle = 2 * np.pi * i / num_points
+                distance = radius * (0.8 + 0.4 * np.random.random())  # Randomize a bit
+                x = position[0] + distance * np.cos(angle)
+                y = position[1] + distance * np.sin(angle)
+                lidar_points.append((x, y))
+            
+            return lidar_points
+        except Exception as e:
+            self.get_logger().error(f"Error simulating LiDAR data: {str(e)}")
+            return []  # Return empty list on error
 
 def demo_area_recognition():
     """Demonstrate the area recognition system with a simulated mission"""
@@ -168,9 +203,14 @@ def demo_area_recognition():
 def main(args=None):
     rclpy.init(args=args)
     area_recognition = AreaRecognitionSystem()
-    rclpy.spin(area_recognition)
-    area_recognition.destroy_node()
-    rclpy.shutdown()
+    
+    try:
+        rclpy.spin(area_recognition)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        area_recognition.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == "__main__":
     demo_area_recognition()

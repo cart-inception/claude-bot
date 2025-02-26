@@ -1,5 +1,6 @@
 {
     "lidar_port": "/dev/ttyUSB0",
+    "rover_control_port": "/dev/ttyUSB1",
     "gpio_left_motor_pin": 17,
     "gpio_right_motor_pin": 18
 }

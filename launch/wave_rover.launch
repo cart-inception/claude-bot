@@ -1,29 +1,33 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
+import os
+from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
+    package_dir = get_package_share_directory('claude_bot')
+    
     return LaunchDescription([
         Node(
-            package='wave_rover_ros',
-            executable='wave_rover_controller.py',
+            package='claude_bot',
+            executable='wave_rover_controller',
             name='wave_rover_controller',
             output='screen'
         ),
         Node(
-            package='wave_rover_ros',
-            executable='lidar_integration.py',
+            package='claude_bot',
+            executable='lidar_integration',
             name='lidar_integration',
             output='screen'
         ),
         Node(
-            package='wave_rover_ros',
-            executable='mapping.py',
+            package='claude_bot',
+            executable='mapping',
             name='mapping',
             output='screen'
         ),
         Node(
-            package='wave_rover_ros',
-            executable='navigation.py',
+            package='claude_bot',
+            executable='navigation',
             name='navigation',
             output='screen'
         )

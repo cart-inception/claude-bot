@@ -4,6 +4,7 @@ from rclpy.node import Node
 import time
 import random
 import os
+import sys
 from mapping import Mapping
 from navigation import Navigation
 from lidar_integration import LidarIntegration
@@ -39,10 +40,10 @@ class WaveRoverController(Node):
         
         # ROS 2 timer for control loop
         self.timer = self.create_timer(1.0, self.handle_commands)
-
+        
     def initialize_robot(self):
         log_message("Initializing robot hardware and software components")
-        rclpy.init()
+        # Note: rclpy.init() should be called in main(), not here
         self.lidar.initialize_lidar()
         
         # Initialize GPIO rover control - prioritizing GPIO control for Raspberry Pi
@@ -62,16 +63,14 @@ class WaveRoverController(Node):
         self.running = True
         log_message("Starting control loop with area recognition enabled...")
         try:
-            rclpy.spin(self)
+            # ROS 2 spin is handled in main() function
+            pass
         except KeyboardInterrupt:
             self.stop()
         finally:
-            # Cleanup and shutdown
-            if self.gpio_controller is not None:
-                self.gpio_controller.cleanup()
-            self.destroy_node()
-            rclpy.shutdown()
-
+            # Cleanup and shutdown is handled in main() function
+            pass
+            
     def handle_commands(self):
         if not self.running:
             return
@@ -145,7 +144,7 @@ class WaveRoverController(Node):
         if random.random() < 0.1:
             self.area_recognition.save_current_map()
             log_message("Map saved automatically")
-
+    
     def stop(self):
         self.running = False
         log_message("Stopping robot")
@@ -159,9 +158,26 @@ class WaveRoverController(Node):
         # Additional cleanup if needed
 
 def main(args=None):
+    # Initialize ROS 2
     rclpy.init(args=args)
+    
+    # Create controller node
     controller = WaveRoverController()
-    controller.start_control_loop()
+    controller.running = True  # Start the control loop
+    
+    try:
+        # Start spinning with ROS 2
+        rclpy.spin(controller)
+    except KeyboardInterrupt:
+        print("Keyboard interrupt detected. Shutting down...")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+    finally:
+        # Cleanup
+        if controller.gpio_controller is not None:
+            controller.gpio_controller.cleanup()
+        controller.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == "__main__":
     main()

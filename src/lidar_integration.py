@@ -6,7 +6,7 @@ import numpy as np
 import os
 import pickle
 from sensor_msgs.msg import LaserScan, PointCloud2
-import sensor_msgs.point_cloud2 as pc2
+import sensor_msgs_py.point_cloud2 as pc2
 from geometry_msgs.msg import Point
 from std_msgs.msg import Header
 from nav_msgs.msg import OccupancyGrid
@@ -116,12 +116,12 @@ class LidarIntegration(Node):
             header.stamp = self.get_clock().now().to_msg()
             header.frame_id = "lidar_frame"
             
-            # Convert our point cloud data format to ROS PointCloud2 format
+            # Convert our point cloud data format to ROS 2 PointCloud2 format
             points = []
             for point in self.point_cloud_data:
-                points.append([point['x'], point['y'], point['z']])
+                points.append([point.get('x', 0.0), point.get('y', 0.0), point.get('z', 0.0)])
             
-            # Create PointCloud2 message
+            # Create PointCloud2 message using ROS 2 compatible function
             pc2_msg = pc2.create_cloud_xyz32(header, points)
             
             # Publish point cloud
@@ -274,9 +274,14 @@ def main(args=None):
     rclpy.init(args=args)
     lidar_integration = LidarIntegration()
     lidar_integration.initialize_lidar()
-    rclpy.spin(lidar_integration)
-    lidar_integration.destroy_node()
-    rclpy.shutdown()
+    
+    try:
+        rclpy.spin(lidar_integration)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        lidar_integration.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
