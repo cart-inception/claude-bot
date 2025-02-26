@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+import rclpy
+from rclpy.node import Node
 import time
 import random
 import os
@@ -9,8 +11,10 @@ from area_recognition import AreaRecognitionSystem
 from utils.helper import log_message, load_configuration
 from gpio_controller import GpioController
 
-class WaveRoverController:
+class WaveRoverController(Node):
     def __init__(self):
+        super().__init__('wave_rover_controller')
+        
         # Load configuration from config.json located one directory up
         config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'config.json')
         self.config = load_configuration(config_path)
@@ -32,11 +36,14 @@ class WaveRoverController:
         self.current_area_familiar = False
         self.familiar_areas_visited = 0
         self.new_areas_visited = 0
+        
+        # ROS 2 timer for control loop
+        self.timer = self.create_timer(1.0, self.handle_commands)
 
     def initialize_robot(self):
         log_message("Initializing robot hardware and software components")
-        lidar_port = self.config.get('lidar_port', '/dev/ttyUSB0')
-        self.lidar.initialize_lidar(lidar_port)
+        rclpy.init()
+        self.lidar.initialize_lidar()
         
         # Initialize GPIO rover control - prioritizing GPIO control for Raspberry Pi
         left_pin = self.config.get('gpio_left_motor_pin')
@@ -55,19 +62,20 @@ class WaveRoverController:
         self.running = True
         log_message("Starting control loop with area recognition enabled...")
         try:
-            while self.running:
-                self.handle_commands()
-                time.sleep(1)  # simulate delay between iterations
-                
-                # Periodically save the map
-                if random.random() < 0.1:  # ~10% chance each iteration
-                    self.area_recognition.save_current_map()
-                    log_message("Map saved automatically")
-                    
+            rclpy.spin(self)
         except KeyboardInterrupt:
             self.stop()
+        finally:
+            # Cleanup and shutdown
+            if self.gpio_controller is not None:
+                self.gpio_controller.cleanup()
+            self.destroy_node()
+            rclpy.shutdown()
 
     def handle_commands(self):
+        if not self.running:
+            return
+            
         # Collect LiDAR data
         log_message("Collecting LiDAR data...")
         fake_data = [{"z": random.uniform(0, 2)} for _ in range(10)]
@@ -132,6 +140,11 @@ class WaveRoverController:
                 
             self.gpio_controller.set_motor_speeds(left_speed, right_speed)
             log_message(f"Set GPIO motor speeds: Left={left_speed:.1f}%, Right={right_speed:.1f}%")
+            
+        # Periodically save the map (10% chance each iteration)
+        if random.random() < 0.1:
+            self.area_recognition.save_current_map()
+            log_message("Map saved automatically")
 
     def stop(self):
         self.running = False
@@ -145,6 +158,10 @@ class WaveRoverController:
             self.gpio_controller.cleanup()
         # Additional cleanup if needed
 
-if __name__ == "__main__":
+def main(args=None):
+    rclpy.init(args=args)
     controller = WaveRoverController()
     controller.start_control_loop()
+
+if __name__ == "__main__":
+    main()

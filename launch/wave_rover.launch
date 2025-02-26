@@ -1,6 +1,30 @@
-<launch>
-  <node name="wave_rover_controller" pkg="wave_rover_ros" type="wave_rover_controller.py" output="screen" />
-  <node name="lidar_integration" pkg="wave_rover_ros" type="lidar_integration.py" output="screen" />
-  <node name="mapping" pkg="wave_rover_ros" type="mapping.py" output="screen" />
-  <node name="navigation" pkg="wave_rover_ros" type="navigation.py" output="screen" />
-</launch>
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='wave_rover_ros',
+            executable='wave_rover_controller.py',
+            name='wave_rover_controller',
+            output='screen'
+        ),
+        Node(
+            package='wave_rover_ros',
+            executable='lidar_integration.py',
+            name='lidar_integration',
+            output='screen'
+        ),
+        Node(
+            package='wave_rover_ros',
+            executable='mapping.py',
+            name='mapping',
+            output='screen'
+        ),
+        Node(
+            package='wave_rover_ros',
+            executable='navigation.py',
+            name='navigation',
+            output='screen'
+        )
+    ])

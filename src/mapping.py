@@ -1,11 +1,18 @@
+#!/usr/bin/env python3
 import numpy as np
 import os
 import json
 import pickle
 from datetime import datetime
+import rclpy
+from rclpy.node import Node
+from nav_msgs.msg import OccupancyGrid
+from std_msgs.msg import Header
 
-class Mapping:
+class Mapping(Node):
     def __init__(self, grid_size=0.1, confidence_threshold=0.7):
+        super().__init__('mapping')
+        
         # Initialize map_data as a dictionary with a list to hold points
         self.map_data = {'points': []}
         self.visited_locations = set()
@@ -19,6 +26,12 @@ class Mapping:
         # Map versioning and metadata
         self.map_created = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.map_last_updated = self.map_created
+        
+        # ROS 2 publishers
+        self.map_publisher = self.create_publisher(OccupancyGrid, '/wave_rover/grid_map', 10)
+        
+        # Timer for periodic map updates
+        self.map_update_timer = self.create_timer(5.0, self.publish_map)
     
     def create_map(self, lidar_data):
         # Process LiDAR data to create/update the map by appending new points
@@ -121,6 +134,70 @@ class Mapping:
         # Check if a location has been visited
         return location in self.visited_locations
     
+    def publish_map(self):
+        """Publish the current map as an OccupancyGrid message"""
+        if not self.grid_map:
+            return  # No map data to publish
+            
+        # Create occupancy grid from our grid map
+        grid = OccupancyGrid()
+        grid.header = Header()
+        grid.header.stamp = self.get_clock().now().to_msg()
+        grid.header.frame_id = "map"
+        
+        # Find grid boundaries
+        min_x = min_y = float('inf')
+        max_x = max_y = float('-inf')
+        
+        for grid_cell in self.grid_map.keys():
+            x, y = grid_cell
+            min_x = min(min_x, x)
+            min_y = min(min_y, y)
+            max_x = max(max_x, x)
+            max_y = max(max_y, y)
+        
+        # If there are no cells, just return
+        if min_x == float('inf'):
+            return
+            
+        # Add some padding
+        padding = 10
+        min_x -= padding
+        min_y -= padding
+        max_x += padding
+        max_y += padding
+        
+        # Set dimensions
+        width = max_x - min_x + 1
+        height = max_y - min_y + 1
+        
+        grid.info.resolution = self.grid_size
+        grid.info.width = int(width)
+        grid.info.height = int(height)
+        grid.info.origin.position.x = min_x * self.grid_size
+        grid.info.origin.position.y = min_y * self.grid_size
+        
+        # Initialize the data array with -1 (unknown)
+        data = [-1] * (int(width) * int(height))
+        
+        # Fill in the known cells
+        for (x, y), confidence in self.grid_map.items():
+            if min_x <= x <= max_x and min_y <= y <= max_y:
+                # Convert grid coordinates to array index
+                array_x = x - min_x
+                array_y = y - min_y
+                index = int(array_y * width + array_x)
+                
+                if 0 <= index < len(data):
+                    # Convert confidence to occupancy (0-100)
+                    # Confidence 0.5 means unknown (50)
+                    # Higher confidence means more likely to be occupied
+                    occupancy = int(confidence * 100)
+                    data[index] = occupancy
+        
+        grid.data = data
+        self.map_publisher.publish(grid)
+    
     def save_map(self, filename):
         # Save the current map with grid representation to a file
         map_data = {
@@ -165,7 +242,19 @@ class Mapping:
             self.map_last_updated = data.get('last_updated', self.map_last_updated)
             self.current_position = data.get('current_position', (0, 0))
             
+            # Publish the loaded map
+            self.publish_map()
             return True
         except Exception as e:
-            print(f"Failed to load map: {e}")
+            self.get_logger().error(f"Failed to load map: {e}")
             return False
+
+def main(args=None):
+    rclpy.init(args=args)
+    mapping_node = Mapping()
+    rclpy.spin(mapping_node)
+    mapping_node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()

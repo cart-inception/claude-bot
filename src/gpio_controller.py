@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """GpioController module for controlling rover motors using Raspberry Pi GPIO pins."""
 try:
     import RPi.GPIO as GPIO

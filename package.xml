@@ -1,21 +1,27 @@
-<package format="2">
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>wave_rover_ros</name>
   <version>0.1.0</version>
-  <description>The ROS package for controlling the WAVE ROVER robot with LiDAR integration for mapping and navigation.</description>
+  <description>The ROS 2 package for controlling the WAVE ROVER robot with LiDAR integration for mapping and navigation.</description>
   <maintainer email="your_email@example.com">Your Name</maintainer>
   <license>MIT</license>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
-  <depend>rospy</depend>
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
-  <depend>tf</depend>
-  <depend>pcl_ros</depend>
+  <depend>tf2_ros</depend>
   <depend>pcl_conversions</depend>
 
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
   <export>
-    <build_type>catkin</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

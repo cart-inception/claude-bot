@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import rospy
+import rclpy
+from rclpy.node import Node
 import numpy as np
 import os
 import pickle
@@ -12,8 +13,10 @@ from nav_msgs.msg import OccupancyGrid
 from visualization_msgs.msg import Marker, MarkerArray
 from utils.helper import log_message, process_point_cloud_data, save_map, load_map
 
-class LidarIntegration:
+class LidarIntegration(Node):
     def __init__(self):
+        super().__init__('lidar_integration')
+        
         self.lidar = None
         self.point_cloud_data = []
         self.scan_subscriber = None
@@ -30,25 +33,30 @@ class LidarIntegration:
     def initialize_lidar(self):
         """Initialize the LiDAR scanner and ROS connections"""
         try:
-            # Initialize ROS node if not already initialized
-            if not rospy.get_node_uri():
-                rospy.init_node('wave_rover_lidar', anonymous=True)
-            
             # Subscribe to the laser scan topic
-            self.scan_subscriber = rospy.Subscriber(
-                '/scan', LaserScan, self.laser_scan_callback)
+            self.scan_subscriber = self.create_subscription(
+                LaserScan,
+                '/scan',
+                self.laser_scan_callback,
+                10)
             
             # Create publisher for processed point cloud data
-            self.point_cloud_publisher = rospy.Publisher(
-                '/wave_rover/point_cloud', PointCloud2, queue_size=1)
+            self.point_cloud_publisher = self.create_publisher(
+                PointCloud2,
+                '/wave_rover/point_cloud',
+                10)
             
             # Create publisher for remembered locations
-            self.location_marker_publisher = rospy.Publisher(
-                '/wave_rover/remembered_locations', MarkerArray, queue_size=1)
+            self.location_marker_publisher = self.create_publisher(
+                MarkerArray,
+                '/wave_rover/remembered_locations',
+                10)
             
             # Create publisher for map data
-            self.map_publisher = rospy.Publisher(
-                '/wave_rover/map', OccupancyGrid, queue_size=1)
+            self.map_publisher = self.create_publisher(
+                OccupancyGrid,
+                '/wave_rover/map',
+                10)
             
             log_message("LiDAR system initialized successfully")
             self.is_initialized = True
@@ -105,7 +113,7 @@ class LidarIntegration:
         try:
             # Create header
             header = Header()
-            header.stamp = rospy.Time.now()
+            header.stamp = self.get_clock().now().to_msg()
             header.frame_id = "lidar_frame"
             
             # Convert our point cloud data format to ROS PointCloud2 format
@@ -217,7 +225,7 @@ class LidarIntegration:
         
         # Create OccupancyGrid message
         grid = OccupancyGrid()
-        grid.header.stamp = rospy.Time.now()
+        grid.header.stamp = self.get_clock().now().to_msg()
         grid.header.frame_id = "map"
         
         # Set map metadata
@@ -242,7 +250,7 @@ class LidarIntegration:
         for i, loc in enumerate(self.remembered_locations):
             marker = Marker()
             marker.header.frame_id = "map"
-            marker.header.stamp = rospy.Time.now()
+            marker.header.stamp = self.get_clock().now().to_msg()
             marker.ns = "remembered_locations"
             marker.id = i
             marker.type = Marker.SPHERE
@@ -261,3 +269,14 @@ class LidarIntegration:
             marker_array.markers.append(marker)
         
         self.location_marker_publisher.publish(marker_array)
+
+def main(args=None):
+    rclpy.init(args=args)
+    lidar_integration = LidarIntegration()
+    lidar_integration.initialize_lidar()
+    rclpy.spin(lidar_integration)
+    lidar_integration.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
